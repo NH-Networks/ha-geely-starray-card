@@ -8,21 +8,25 @@ Wordt standaard geleverd met **fotorealistische renders van de Geely Starray EM-
 
 ---
 
-## Screenshots
+## Screenshots & Visuele Presets
 
-| Status | Dark Mode | Light Mode |
+| Preset | Weergave | Beschrijving |
 |---|---|---|
-| **Geparkeerd (Totaal Bereik)** | ![Geparkeerd Dark](assets/starray-white-parked-dark.jpg) | ![Geparkeerd Light](assets/starray-white-parked-light.jpg) |
-| **Opladen (Aangesloten)** | ![Opladen Dark](assets/starray-white-charging-dark.jpg) | ![Opladen Light](assets/starray-white-charging-light.jpg) |
-| **Originele 2026 Starray EM-i Referentie** | ![Referentie](assets/starray-white-reference.jpg) | *100% afgestemd op de 2026 Starray EM-i* |
+| **press_front** | ![Voorkant 3/4](assets/starray-white-front-press.png) | **Officiële Europese Persfoto Voorkant (LHD)** met origineel `STARRAY EM-i` showroomkenteken |
+| **press_rear** | ![Achterkant 3/4](assets/starray-white-rear-press.jpg) | **Officiële Europese Persfoto Achterkant (LHD)** met `STARRAY EM-i` showroomkenteken |
+| **plaza** | ![Warschau Plaza](assets/starray-white-plaza-press.jpg) | **Europese Lancering Persfoto** (Warschau Architectuur Plaza) |
+| **studio_dark** | ![Studio Dark](assets/starray-white-parked-dark.jpg) | **Studio Render Donker** (1:1 naadloze studio achtergrond) |
+| **charging** | ![Opladen Dark](assets/starray-white-charging-dark.jpg) | **Oplaadmodus** met pulserende cyaan/emerald laadgloed en kabel |
+| **cockpit** | ![Cockpit](assets/starray-white-cockpit.jpg) | **LHD Cockpit & 15.4" Flyme Auto Touchscreen** |
 
 ---
 
 ## Belangrijkste Eigenschappen
 
-- 🛠️ **Visuele Kaart Editor (GUI):** Volledige ondersteuning voor de Home Assistant dashboard editor (`geely-starray-card-editor`). Stel sensoren, header-stijl en thema's grafisch in met handige keuzelijsten — geen handmatige YAML vereist!
-- 🚗 **Originele Studio Renders Zonder Kenteken:** Uitgerust met neutrale, professionele Geely showroom platen ("STARRAY"). Geen storende buitenlandse kentekens!
-- ⚡ **Super Hybrid & PHEV Ready:** Toont gecombineerd totaal bereik (bijv. `1115 km`), elektrisch bereik (`135 km elektrisch`) en brandstofbereik/niveau (`980 km brandstof`). Werkt ook naadloos met full-electric (BEV) en benzine (ICE).
+- 🛠️ **Visuele Kaart Editor (GUI):** Volledige ondersteuning voor de Home Assistant dashboard editor (`geely-starray-card-editor`). Stel sensoren, header-stijl, voertuigafbeelding-presets en beeldverhouding grafisch in via keuzelijsten — geen YAML vereist!
+- 🚗 **Officiële Europese Persfoto's met STARRAY EM-i Kenteken:** Uitgerust met de officiële Europese introductiefoto's van de Starray EM-i. Geen buitenlandse of willekeurige nummerborden!
+- 📐 **Aanpasbare Beeldverhouding (Aspect Ratio):** Kies tussen `1 / 1` (standaard vierkant dashboard), `16 / 10` (optimaal voor breedbeeld autofotografie) of `16 / 9` / `4 / 3`.
+- ⚡ **Europese 18.4 kWh EM-i Specificaties:** Geoptimaliseerd voor de Europese Starray EM-i met 18.4 kWh Aegis accu (~83 km WLTP elektrisch bereik) en 51L tank (~890 km benzinebereik), totaal circa 968 km.
 - 🔌 **Realtime Laadstatus & Pulse Glow:** Geanimeerde emerald/cyaan pulserende laadgloed bij de laadpoort en aangesloten laadkabel weergave.
 - 📱 **Geely App Header Modus:** Kies tussen de standaard actieradius-weergave (`header: classic`) of de officiële Geely App stijl (`header: app`) met groot batterijpercentage en elektrische/benzine badges.
 - 🔒 **Interactieve Cockpit Bediening:** Tik op de kaart om een modern actievenster te openen met knoppen voor:

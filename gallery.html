@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Geely Starray EM-i - Press & User Gallery</title>
+  <style>
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 20px;
+    }
+    h1 { color: #58a6ff; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      background: #000;
+      transition: transform 0.2s;
+    }
+    .card img:hover {
+      transform: scale(1.05);
+    }
+    .meta {
+      padding: 10px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+  <h1>2026 Geely Starray EM-i (White) - Foto Selectie</h1>
+  <p>Hier zijn alle officiële introductiefoto's van Geely Starray EM-i in Europa inclusief de opnames van de gebruiker:</p>
+  
+  <h2>Foto's van de Gebruiker (Origineel Europees LHD met STARRAY EM-i kenteken)</h2>
+  <div class="grid">
+    <div class="card">
+      <img src="assets/starray-white-front-press.png">
+      <div class="meta"><span>Voorkant 3/4 (Gebruiker)</span><code>starray-white-front-press.png</code></div>
+    </div>
+    <div class="card">
+      <img src="assets/starray-white-rear-press.jpg">
+      <div class="meta"><span>Achterkant 3/4 (Gebruiker)</span><code>starray-white-rear-press.jpg</code></div>
+    </div>
+    <div class="card">
+      <img src="assets/starray-white-plaza-press.jpg">
+      <div class="meta"><span>Plaza Architectuur (iMagazine #20)</span><code>Geely_Starray_EM-i-20.jpg</code></div>
+    </div>
+    <div class="card">
+      <img src="assets/starray-white-front90-press.jpg">
+      <div class="meta"><span>Voorkant Recht (iMagazine #19)</span><code>Geely_Starray_EM-i-19.jpg</code></div>
+    </div>
+    <div class="card">
+      <img src="assets/starray-white-cockpit.jpg">
+      <div class="meta"><span>Cockpit & Flyme Screen (iMagazine #1)</span><code>Geely_Starray_EM-i-1.jpg</code></div>
+    </div>
+  </div>
+
+  <h2>Alle Foto's uit de iMagazine Launch Galerij (Warschau / Europa)</h2>
+  <div class="grid" id="pressGrid">
+  </div>
+
+  <script>
+    const pressGrid = document.getElementById('pressGrid');
+    for (let i = 1; i <= 33; i++) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <a href="assets/press/Geely_Starray_EM-i-${i}.jpg" target="_blank">
+          <img src="assets/press/Geely_Starray_EM-i-${i}.jpg" loading="lazy">
+        </a>
+        <div class="meta">
+          <span>Persfoto #${i}</span>
+          <code>Geely_Starray_EM-i-${i}.jpg</code>
+        </div>
+      `;
+      pressGrid.appendChild(card);
+    }
+  </script>
+</body>
+</html>

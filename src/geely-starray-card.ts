@@ -212,7 +212,23 @@ export class GeelyStarrayCard extends LitElement {
       (img && resolveImage(this.hass, img.parked || img.exterior_side_left, "exterior_side_left")) ||
       img?.fallback;
     if (fromConf) return fromConf;
-    return isDark ? DEFAULT_ASSETS.parkedDark : DEFAULT_ASSETS.parkedLight;
+
+    switch (this.config.image_preset) {
+      case "press_front":
+        return DEFAULT_ASSETS.pressFront;
+      case "press_rear":
+        return DEFAULT_ASSETS.pressRear;
+      case "plaza":
+        return DEFAULT_ASSETS.plaza;
+      case "cockpit":
+        return DEFAULT_ASSETS.cockpit;
+      case "studio_light":
+        return DEFAULT_ASSETS.parkedLight;
+      case "studio_dark":
+        return DEFAULT_ASSETS.parkedDark;
+      default:
+        return isDark ? DEFAULT_ASSETS.parkedDark : DEFAULT_ASSETS.parkedLight;
+    }
   }
 
   protected render(): TemplateResult {
@@ -237,6 +253,7 @@ export class GeelyStarrayCard extends LitElement {
       <ha-card>
         <div
           class="geely-card ${isDark ? "theme-dark" : "theme-light"} ${this.config.show_actions !== false ? "clickable" : ""}"
+          style="--geely-aspect-ratio: ${this.config.aspect_ratio || "1 / 1"};"
           @click=${this.openActions}
         >
           <!-- Background Car Render -->
@@ -522,7 +539,7 @@ export class GeelyStarrayCard extends LitElement {
     .geely-card {
       position: relative;
       width: 100%;
-      aspect-ratio: 1 / 1;
+      aspect-ratio: var(--geely-aspect-ratio, 1 / 1);
       overflow: hidden;
       user-select: none;
     }
@@ -985,6 +1002,34 @@ export class GeelyStarrayCardEditor extends LitElement {
             <option value="auto">Automatisch (Volg Home Assistant)</option>
             <option value="dark">Donker (Dark Mode)</option>
             <option value="light">Licht (Light Mode)</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label>Voertuig Afbeelding (Preset)</label>
+          <select
+            .value=${this._config.image_preset || "studio_dark"}
+            @change=${(ev: any) => this._valueChanged("image_preset", ev.target.value)}
+          >
+            <option value="studio_dark">Studio Render Donker (Geely Starray EM-i)</option>
+            <option value="studio_light">Studio Render Licht (Geely Starray EM-i)</option>
+            <option value="press_front">Europese Persfoto Voorkant 3/4 (Origineel)</option>
+            <option value="press_rear">Europese Persfoto Achterkant 3/4 (Origineel)</option>
+            <option value="plaza">Europese Introductie Warschau Plaza</option>
+            <option value="cockpit">Cockpit & 15.4" Scherm Interieur</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label>Beeldverhouding (Aspect Ratio)</label>
+          <select
+            .value=${this._config.aspect_ratio || "1 / 1"}
+            @change=${(ev: any) => this._valueChanged("aspect_ratio", ev.target.value)}
+          >
+            <option value="1 / 1">1:1 Vierkant (Standaard Dashboard)</option>
+            <option value="16 / 10">16:10 Breedbeeld (Optimaal voor Persfoto)</option>
+            <option value="16 / 9">16:9 Cinematic</option>
+            <option value="4 / 3">4:3 Klassiek</option>
           </select>
         </div>
 

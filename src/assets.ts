@@ -18,6 +18,11 @@ export const DEFAULT_ASSETS = {
   parkedLight: `${CARD_BASE_DIR}assets/starray-white-parked-light.jpg`,
   chargingLight: `${CARD_BASE_DIR}assets/starray-white-charging-light.jpg`,
   cablePng: `${CARD_BASE_DIR}assets/geely-charge-cable.png`,
+  // Official European Launch & User-Provided LHD Press Assets
+  pressFront: `${CARD_BASE_DIR}assets/starray-white-front-press.png`,
+  pressRear: `${CARD_BASE_DIR}assets/starray-white-rear-press.jpg`,
+  plaza: `${CARD_BASE_DIR}assets/starray-white-plaza-press.jpg`,
+  cockpit: `${CARD_BASE_DIR}assets/starray-white-cockpit.jpg`,
 };
 
 /**

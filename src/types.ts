@@ -94,6 +94,10 @@ export interface GeelyCardConfig {
   header?: "classic" | "app" | "hybrid";
   /** Force dark or light mode, or "auto" to follow Home Assistant theme. */
   theme_mode?: "auto" | "dark" | "light";
+  /** Built-in vehicle photo/render preset. */
+  image_preset?: "press_front" | "press_rear" | "plaza" | "studio_dark" | "studio_light" | "cockpit";
+  /** Card aspect ratio, e.g. "1/1" (default), "16/10", "16/9", "4/3". */
+  aspect_ratio?: string;
 }
 
 export type ChargeState = "idle" | "scheduled" | "charging";

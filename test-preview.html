@@ -35,13 +35,26 @@
       margin: 0 0 25px 0;
       font-size: 15px;
       color: #9ca3af;
+      text-align: center;
+      max-width: 800px;
+    }
+    .specs-badge {
+      display: inline-flex;
+      gap: 12px;
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid rgba(0, 229, 255, 0.25);
+      border-radius: 999px;
+      padding: 6px 18px;
+      font-size: 13px;
+      margin-bottom: 25px;
+      color: #00e5ff;
     }
     .demo-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(360px, 420px));
+      grid-template-columns: repeat(auto-fit, minmax(360px, 440px));
       gap: 30px;
       width: 100%;
-      max-width: 1300px;
+      max-width: 1400px;
       justify-content: center;
     }
     .demo-card-container {
@@ -60,92 +73,122 @@
       gap: 6px;
     }
     .card-wrapper {
-      width: 100%;
-      max-width: 420px;
-      aspect-ratio: 1 / 1;
-      border-radius: 18px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+      border-radius: 24px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
-    .toolbar {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 25px;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 10px 18px;
-      border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    .card-wrapper:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 50px rgba(0, 229, 255, 0.15);
     }
-    .btn {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 8px 16px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      transition: all 0.2s;
+    .action-tip {
+      font-size: 12px;
+      color: #6b7280;
+      text-align: center;
+      margin-top: 4px;
     }
-    .btn:hover {
-      background: #00e5ff;
-      color: #090d12;
-      border-color: #00e5ff;
+    .gallery-link {
+      margin-top: 30px;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      color: #58a6ff;
+      text-decoration: none;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    .gallery-link:hover {
+      background: rgba(255, 255, 255, 0.12);
     }
   </style>
-  <!-- Load the bundled custom card component -->
+
+  <!-- Load bundled geely-starray-card custom element -->
   <script type="module" src="./geely-starray-card.js"></script>
 </head>
 <body>
 
-  <h1>2026 Geely Starray EM-i (Wit)</h1>
-  <p class="subtitle">Home Assistant Lovelace Card Showcase & Interactive Test Environment</p>
+  <h1>Geely Starray EM-i (Wit / 2026)</h1>
+  <p class="subtitle">
+    Officiële Europese persfoto's met origineel &quot;STARRAY EM-i&quot; kenteken, 18.4 kWh batterij telemetrie,
+    volledig configureerbare beeldverhouding (1:1 &amp; 16:10) en interactieve acties.
+  </p>
 
-  <div class="toolbar">
-    <button class="btn" id="btn-toggle-lock">Slot Omschakelen</button>
-    <button class="btn" id="btn-toggle-charge">Laadstatus Wisselen</button>
+  <div class="specs-badge">
+    <span>🔋 18.4 kWh Aegis Accu</span>
+    <span>⚡ ~83 km WLTP Elektrisch</span>
+    <span>⛽ 51L Brandstoftank (~890 km)</span>
+    <span>🌟 968 km Totaal Bereik</span>
   </div>
 
   <div class="demo-grid">
-    <!-- Demo 1: Parked (Dark Mode) -->
+    <!-- Demo 1: User Official Press Front (16:10 Widescreen) -->
     <div class="demo-card-container">
-      <div class="demo-label">1. Geparkeerd (Totaal Bereik - Dark Mode)</div>
+      <div class="demo-label">1. Officiële Europese Persfoto Voorkant (16:10)</div>
+      <div class="card-wrapper">
+        <geely-starray-card id="card-press-front"></geely-starray-card>
+      </div>
+      <div class="action-tip">Gebruikersfoto • LHD • STARRAY EM-i kenteken • Klik voor acties</div>
+    </div>
+
+    <!-- Demo 2: User Official Press Rear (16:10 Widescreen) -->
+    <div class="demo-card-container">
+      <div class="demo-label">2. Officiële Europese Persfoto Achterkant (16:10)</div>
+      <div class="card-wrapper">
+        <geely-starray-card id="card-press-rear"></geely-starray-card>
+      </div>
+      <div class="action-tip">Gebruikersfoto • LHD • STARRAY EM-i achterzijde</div>
+    </div>
+
+    <!-- Demo 3: Warsaw Plaza Architectural Launch Photo (16:10) -->
+    <div class="demo-card-container">
+      <div class="demo-label">3. Warschau Plaza Introductie (16:10)</div>
+      <div class="card-wrapper">
+        <geely-starray-card id="card-plaza"></geely-starray-card>
+      </div>
+      <div class="action-tip">Europese lancering persfoto • STARRAY EM-i showroomplaat</div>
+    </div>
+
+    <!-- Demo 4: Studio Render Dark (1:1 Square) -->
+    <div class="demo-card-container">
+      <div class="demo-label">4. Studio Render Donker (1:1 Vierkant)</div>
       <div class="card-wrapper">
         <geely-starray-card id="card-parked-dark"></geely-starray-card>
       </div>
+      <div class="action-tip">Naadloze studio donkere achtergrond • Totaal bereik</div>
     </div>
 
-    <!-- Demo 2: Charging (Dark Mode) -->
+    <!-- Demo 5: Charging & Plugged in (Dark Mode) -->
     <div class="demo-card-container">
-      <div class="demo-label">2. Opladen & Aangesloten (Dark Mode)</div>
+      <div class="demo-label">5. Opladen &amp; Aangesloten (Puls Glow)</div>
       <div class="card-wrapper">
         <geely-starray-card id="card-charging-dark"></geely-starray-card>
       </div>
+      <div class="action-tip">Pulsende laadanimatie • Resterende tijd • Laadkabel</div>
     </div>
 
-    <!-- Demo 3: Parked (Light Mode) -->
+    <!-- Demo 6: Cockpit / Flyme Interieur -->
     <div class="demo-card-container">
-      <div class="demo-label">3. Geparkeerd (Light Mode)</div>
+      <div class="demo-label">6. Cockpit &amp; 15.4" Flyme Scherm (16:10)</div>
       <div class="card-wrapper">
-        <geely-starray-card id="card-parked-light"></geely-starray-card>
+        <geely-starray-card id="card-cockpit"></geely-starray-card>
       </div>
+      <div class="action-tip">LHD interieur weergave • Geely Flyme Auto</div>
     </div>
 
-    <!-- Demo 4: App Header Style -->
-    <div class="demo-card-container">
-      <div class="demo-label">4. Geely App Layout (Header: App)</div>
-      <div class="card-wrapper">
-        <geely-starray-card id="card-app-header"></geely-starray-card>
-      </div>
-    </div>
-
-    <!-- Demo 5: Visual Card Editor (Lovelace UI Config) -->
-    <div class="demo-card-container" style="max-width: 420px; width: 100%;">
-      <div class="demo-label">5. Lovelace Visual Editor (GUI Config)</div>
+    <!-- Demo 7: Visual Card Editor (Lovelace UI Config) -->
+    <div class="demo-card-container" style="max-width: 440px; width: 100%;">
+      <div class="demo-label">7. Lovelace Visual Editor (GUI Config)</div>
       <div style="background: rgba(255,255,255,0.04); border-radius: 18px; padding: 18px; border: 1px solid rgba(255,255,255,0.1);">
         <geely-starray-card-editor id="card-editor-demo"></geely-starray-card-editor>
       </div>
+      <div class="action-tip">Volledige visuele configuratie in Home Assistant UI</div>
     </div>
   </div>
+
+  <a class="gallery-link" href="gallery.html" target="_blank">
+    📷 Bekijk alle 33 officiële introductiefoto's in de galerij &rarr;
+  </a>
 
   <script>
     // Mock Home Assistant Instance
@@ -159,187 +202,121 @@
         "sensor.geely_starray_charging_status": { state: "not_charging", attributes: {} },
         "sensor.geely_starray_time_to_full_charge": { state: "38", attributes: { unit_of_measurement: "min" } },
         "lock.geely_starray_doors": { state: "locked", attributes: {} },
-        "device_tracker.geely_starray_location": { state: "home", attributes: {} },
+        "device_tracker.geely_starray_location": { state: "home", attributes: { latitude: 52.3676, longitude: 4.9041 } },
         "switch.geely_starray_ac": { state: "off", attributes: {} },
         "switch.geely_starray_defrost": { state: "off", attributes: {} },
-        "button.geely_starray_unlock_trunk": { state: "unknown", attributes: {} },
-        "button.geely_starray_find_car": { state: "unknown", attributes: {} },
+        "button.geely_starray_unlock_trunk": { state: "idle", attributes: {} },
+        "button.geely_starray_find_car": { state: "idle", attributes: {} },
       },
-      config: { unit_system: { length: "km" } },
-      themes: { darkMode: true },
-      callService(domain, service, data) {
-        console.log(`[HA callService] ${domain}.${service}`, data);
-        if (domain === "lock") {
-          mockHass.states["lock.geely_starray_doors"].state = (service === "lock" ? "locked" : "unlocked");
-          updateAllCards();
-        } else if (domain === "switch" && service === "toggle") {
-          const id = data.entity_id;
-          if (mockHass.states[id]) {
-            mockHass.states[id].state = mockHass.states[id].state === "on" ? "off" : "on";
-            updateAllCards();
-          }
-        }
-        return Promise.resolve({ success: true });
+      config: {
+        unit_system: { length: "km" }
+      },
+      themes: {
+        darkMode: true
+      },
+      callService: async (domain, service, data) => {
+        console.log(`[Home Assistant Service Call] ${domain}.${service}`, data);
+        alert(`Service aangeroepen: ${domain}.${service}\n${JSON.stringify(data || {})}`);
+        return Promise.resolve();
       }
     };
 
     const mockHassCharging = JSON.parse(JSON.stringify(mockHass));
     mockHassCharging.states["binary_sensor.geely_starray_charger_plug"].state = "on";
     mockHassCharging.states["sensor.geely_starray_charging_status"].state = "charging";
-    mockHassCharging.callService = mockHass.callService;
 
-    const mockHassLight = JSON.parse(JSON.stringify(mockHass));
-    mockHassLight.themes.darkMode = false;
-    mockHassLight.callService = mockHass.callService;
+    const baseEntities = {
+      battery: "sensor.geely_starray_battery_percentage",
+      electric_range: "sensor.geely_starray_electric_range",
+      fuel_range: "sensor.geely_starray_fuel_range",
+      fuel_level: "sensor.geely_starray_fuel_level",
+      charging_connection_status: "binary_sensor.geely_starray_charger_plug",
+      charging_status: "sensor.geely_starray_charging_status",
+      charging_time_left: "sensor.geely_starray_time_to_full_charge",
+      lock: "lock.geely_starray_doors",
+      location: "device_tracker.geely_starray_location",
+      climate: "switch.geely_starray_ac",
+      defrost: "switch.geely_starray_defrost",
+      unlock_trunk: "button.geely_starray_unlock_trunk",
+      find_car: "button.geely_starray_find_car",
+    };
 
-    // Card 1: Parked Dark
-    const card1 = document.getElementById("card-parked-dark");
+    // 1. Press Front (16:10)
+    const card1 = document.getElementById("card-press-front");
     card1.setConfig({
       type: "custom:geely-starray-card",
       name: "Geely Starray EM-i",
-      header: "classic",
-      images: {
-        parked: "./assets/starray-white-parked-dark.jpg",
-        charging: "./assets/starray-white-charging-dark.jpg"
-      },
-      entities: {
-        battery: "sensor.geely_starray_battery_percentage",
-        electric_range: "sensor.geely_starray_electric_range",
-        fuel_range: "sensor.geely_starray_fuel_range",
-        fuel_level: "sensor.geely_starray_fuel_level",
-        charging_connection_status: "binary_sensor.geely_starray_charger_plug",
-        charging_status: "sensor.geely_starray_charging_status",
-        lock: "lock.geely_starray_doors",
-        location: "device_tracker.geely_starray_location",
-        climate: "switch.geely_starray_ac",
-        defrost: "switch.geely_starray_defrost",
-        unlock_trunk: "button.geely_starray_unlock_trunk",
-        find_car: "button.geely_starray_find_car",
-      }
+      image_preset: "press_front",
+      aspect_ratio: "16 / 10",
+      entities: baseEntities
     });
     card1.hass = mockHass;
 
-    // Card 2: Charging Dark
-    const card2 = document.getElementById("card-charging-dark");
+    // 2. Press Rear (16:10)
+    const card2 = document.getElementById("card-press-rear");
     card2.setConfig({
       type: "custom:geely-starray-card",
       name: "Geely Starray EM-i",
-      header: "classic",
-      images: {
-        parked: "./assets/starray-white-parked-dark.jpg",
-        charging: "./assets/starray-white-charging-dark.jpg"
-      },
-      entities: {
-        battery: "sensor.geely_starray_battery_percentage",
-        electric_range: "sensor.geely_starray_electric_range",
-        fuel_range: "sensor.geely_starray_fuel_range",
-        fuel_level: "sensor.geely_starray_fuel_level",
-        charging_connection_status: "binary_sensor.geely_starray_charger_plug",
-        charging_status: "sensor.geely_starray_charging_status",
-        charging_time_left: "sensor.geely_starray_time_to_full_charge",
-        lock: "lock.geely_starray_doors",
-        location: "device_tracker.geely_starray_location",
-        climate: "switch.geely_starray_ac",
-      }
+      image_preset: "press_rear",
+      aspect_ratio: "16 / 10",
+      entities: baseEntities
     });
-    card2.hass = mockHassCharging;
+    card2.hass = mockHass;
 
-    // Card 3: Parked Light
-    const card3 = document.getElementById("card-parked-light");
+    // 3. Warsaw Plaza (16:10)
+    const card3 = document.getElementById("card-plaza");
     card3.setConfig({
       type: "custom:geely-starray-card",
       name: "Geely Starray EM-i",
-      header: "classic",
-      theme_mode: "light",
-      images: {
-        parked: "./assets/starray-white-parked-light.jpg",
-        charging: "./assets/starray-white-charging-light.jpg"
-      },
-      entities: {
-        battery: "sensor.geely_starray_battery_percentage",
-        electric_range: "sensor.geely_starray_electric_range",
-        fuel_range: "sensor.geely_starray_fuel_range",
-        fuel_level: "sensor.geely_starray_fuel_level",
-        lock: "lock.geely_starray_doors",
-        climate: "switch.geely_starray_ac",
-      }
+      image_preset: "plaza",
+      aspect_ratio: "16 / 10",
+      entities: baseEntities
     });
-    card3.hass = mockHassLight;
+    card3.hass = mockHass;
 
-    // Card 4: App Header Style
-    const card4 = document.getElementById("card-app-header");
+    // 4. Studio Dark (1:1)
+    const card4 = document.getElementById("card-parked-dark");
     card4.setConfig({
       type: "custom:geely-starray-card",
       name: "Geely Starray EM-i",
-      header: "app",
-      images: {
-        parked: "./assets/starray-white-parked-dark.jpg",
-        charging: "./assets/starray-white-charging-dark.jpg"
-      },
-      entities: {
-        battery: "sensor.geely_starray_battery_percentage",
-        electric_range: "sensor.geely_starray_electric_range",
-        fuel_range: "sensor.geely_starray_fuel_range",
-        fuel_level: "sensor.geely_starray_fuel_level",
-        lock: "lock.geely_starray_doors",
-        climate: "switch.geely_starray_ac",
-      }
+      image_preset: "studio_dark",
+      aspect_ratio: "1 / 1",
+      entities: baseEntities
     });
     card4.hass = mockHass;
 
-    // Card Editor Demo
+    // 5. Charging Dark (1:1)
+    const card5 = document.getElementById("card-charging-dark");
+    card5.setConfig({
+      type: "custom:geely-starray-card",
+      name: "Geely Starray EM-i",
+      image_preset: "studio_dark",
+      aspect_ratio: "1 / 1",
+      entities: baseEntities
+    });
+    card5.hass = mockHassCharging;
+
+    // 6. Cockpit (16:10)
+    const card6 = document.getElementById("card-cockpit");
+    card6.setConfig({
+      type: "custom:geely-starray-card",
+      name: "Geely Starray EM-i",
+      image_preset: "cockpit",
+      aspect_ratio: "16 / 10",
+      entities: baseEntities
+    });
+    card6.hass = mockHass;
+
+    // 7. Editor Demo
     const editor = document.getElementById("card-editor-demo");
-    if (editor) {
-      editor.setConfig({
-        type: "custom:geely-starray-card",
-        name: "Geely Starray EM-i",
-        header: "classic",
-        theme_mode: "auto",
-        entities: {
-          battery: "sensor.geely_starray_battery_percentage",
-          electric_range: "sensor.geely_starray_electric_range",
-          fuel_range: "sensor.geely_starray_fuel_range",
-          fuel_level: "sensor.geely_starray_fuel_level",
-          charging_connection_status: "binary_sensor.geely_starray_charger_plug",
-          charging_status: "sensor.geely_starray_charging_status",
-          charging_time_left: "sensor.geely_starray_time_to_full_charge",
-          lock: "lock.geely_starray_doors",
-          location: "device_tracker.geely_starray_location",
-          climate: "switch.geely_starray_ac",
-          defrost: "switch.geely_starray_defrost",
-          unlock_trunk: "button.geely_starray_unlock_trunk",
-          find_car: "button.geely_starray_find_car",
-        }
-      });
-      editor.hass = mockHass;
-      editor.addEventListener("config-changed", (ev) => {
-        console.log("[Editor Config Changed]", ev.detail.config);
-        card1.setConfig(ev.detail.config);
-      });
-    }
-
-    function updateAllCards() {
-      card1.hass = { ...mockHass };
-      card2.hass = { ...mockHassCharging };
-      card3.hass = { ...mockHassLight };
-      card4.hass = { ...mockHass };
-      if (editor) editor.hass = { ...mockHass };
-    }
-
-    document.getElementById("btn-toggle-lock").addEventListener("click", () => {
-      const cur = mockHass.states["lock.geely_starray_doors"].state;
-      mockHass.states["lock.geely_starray_doors"].state = cur === "locked" ? "unlocked" : "locked";
-      mockHassCharging.states["lock.geely_starray_doors"].state = mockHass.states["lock.geely_starray_doors"].state;
-      mockHassLight.states["lock.geely_starray_doors"].state = mockHass.states["lock.geely_starray_doors"].state;
-      updateAllCards();
+    editor.setConfig({
+      type: "custom:geely-starray-card",
+      name: "Geely Starray EM-i",
+      image_preset: "press_front",
+      aspect_ratio: "16 / 10",
+      entities: baseEntities
     });
-
-    document.getElementById("btn-toggle-charge").addEventListener("click", () => {
-      const isChg = mockHassCharging.states["sensor.geely_starray_charging_status"].state === "charging";
-      mockHassCharging.states["sensor.geely_starray_charging_status"].state = isChg ? "not_charging" : "charging";
-      mockHassCharging.states["binary_sensor.geely_starray_charger_plug"].state = isChg ? "off" : "on";
-      updateAllCards();
-    });
+    editor.hass = mockHass;
   </script>
 </body>
 </html>
