@@ -25,8 +25,13 @@ export function resolveImage(hass: HomeAssistant, value: string | undefined, att
 
 export function numState(hass: HomeAssistant, entityId?: string): number | undefined {
   const s = getState(hass, entityId);
-  if (s === undefined) return undefined;
-  const n = parseFloat(s);
+  if (s === undefined || s === null) return undefined;
+  const str = String(s).trim().toLowerCase();
+  if (str === "unavailable" || str === "unknown" || str === "") return undefined;
+  const cleaned = str.replace(",", ".");
+  const match = cleaned.match(/-?\d+(\.\d+)?/);
+  if (!match) return undefined;
+  const n = parseFloat(match[0]);
   return Number.isNaN(n) ? undefined : n;
 }
 
@@ -64,7 +69,7 @@ function isHome(hass: HomeAssistant, entities: GeelyCardEntities): boolean {
 export function isConnected(hass: HomeAssistant, entities: GeelyCardEntities): boolean {
   const plugEntity = entities.charger_plug || entities.charging_connection_status;
   if (!plugEntity) return false;
-  const val = (getState(hass, plugEntity) || "").toLowerCase();
+  const val = (getState(hass, plugEntity) || "").toLowerCase().trim();
   if (val === "on" || val === "true" || val === "connected" || val === "plugged_in" || val === "charging") {
     return true;
   }
@@ -74,8 +79,8 @@ export function isConnected(hass: HomeAssistant, entities: GeelyCardEntities): b
 export function isCharging(hass: HomeAssistant, entities: GeelyCardEntities): boolean {
   const chargeStatusEntity = entities.charging_status;
   if (!chargeStatusEntity) return false;
-  const val = (getState(hass, chargeStatusEntity) || "").toLowerCase();
-  if (val === "charging" || val === "fast_charging" || val === "trickle") return true;
+  const val = (getState(hass, chargeStatusEntity) || "").toLowerCase().trim();
+  if (val === "charging" || val === "fast_charging" || val === "trickle" || val === "on" || val === "true") return true;
   return val.includes("charg") && !val.includes("not") && !val.includes("discharg");
 }
 

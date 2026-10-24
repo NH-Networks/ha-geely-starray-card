@@ -20,8 +20,9 @@ Wordt standaard geleverd met **fotorealistische renders van de Geely Starray EM-
 
 ## Belangrijkste Eigenschappen
 
+- 🛠️ **Visuele Kaart Editor (GUI):** Volledige ondersteuning voor de Home Assistant dashboard editor (`geely-starray-card-editor`). Stel sensoren, header-stijl en thema's grafisch in met handige keuzelijsten — geen handmatige YAML vereist!
+- 🚗 **Originele Studio Renders Zonder Kenteken:** Uitgerust met neutrale, professionele Geely showroom platen ("STARRAY"). Geen storende buitenlandse kentekens!
 - ⚡ **Super Hybrid & PHEV Ready:** Toont gecombineerd totaal bereik (bijv. `1115 km`), elektrisch bereik (`135 km elektrisch`) en brandstofbereik/niveau (`980 km brandstof`). Werkt ook naadloos met full-electric (BEV) en benzine (ICE).
-- 🚗 **Standaard Geely Starray Renders:** Geen ingewikkelde afbeeldingsconfiguratie vereist; de kaart toont direct de witte Geely Starray EM-i studio renders.
 - 🔌 **Realtime Laadstatus & Pulse Glow:** Geanimeerde emerald/cyaan pulserende laadgloed bij de laadpoort en aangesloten laadkabel weergave.
 - 📱 **Geely App Header Modus:** Kies tussen de standaard actieradius-weergave (`header: classic`) of de officiële Geely App stijl (`header: app`) met groot batterijpercentage en elektrische/benzine badges.
 - 🔒 **Interactieve Cockpit Bediening:** Tik op de kaart om een modern actievenster te openen met knoppen voor:

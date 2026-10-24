@@ -70,6 +70,10 @@ export class GeelyStarrayCard extends LitElement {
     return 3;
   }
 
+  public static async getConfigElement(): Promise<HTMLElement> {
+    return document.createElement("geely-starray-card-editor");
+  }
+
   public static getStubConfig(): GeelyCardConfig {
     return {
       type: "custom:geely-starray-card",
@@ -919,12 +923,258 @@ export class GeelyStarrayCard extends LitElement {
   `;
 }
 
-// Register both custom elements for maximum compatibility
+export class GeelyStarrayCardEditor extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state() private _config!: GeelyCardConfig;
+
+  public setConfig(config: GeelyCardConfig): void {
+    this._config = { ...config, entities: { ...config.entities } };
+  }
+
+  private _valueChanged(key: string, value: any, isEntity = false): void {
+    if (!this._config) return;
+    const newConfig = { ...this._config };
+    if (isEntity) {
+      newConfig.entities = { ...newConfig.entities, [key]: value };
+    } else {
+      (newConfig as any)[key] = value;
+    }
+    this._config = newConfig;
+    this.dispatchEvent(
+      new CustomEvent("config-changed", {
+        detail: { config: this._config },
+        bubbles: true,
+        composed: true,
+      })
+    );
+  }
+
+  protected render(): TemplateResult {
+    if (!this.hass || !this._config) return html``;
+    const e = this._config.entities || {};
+
+    return html`
+      <div class="card-config">
+        <div class="form-row">
+          <label>Naam / Model</label>
+          <input
+            type="text"
+            .value=${this._config.name || "Geely Starray EM-i"}
+            @change=${(ev: any) => this._valueChanged("name", ev.target.value)}
+          />
+        </div>
+
+        <div class="form-row">
+          <label>Header Weergave</label>
+          <select
+            .value=${this._config.header || "classic"}
+            @change=${(ev: any) => this._valueChanged("header", ev.target.value)}
+          >
+            <option value="classic">Klassiek (Totaal Bereik + Opsplitsing)</option>
+            <option value="app">Geely App Stijl (Batterij % Prominent)</option>
+            <option value="hybrid">Hybride Focus</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label>Thema Modus</label>
+          <select
+            .value=${this._config.theme_mode || "auto"}
+            @change=${(ev: any) => this._valueChanged("theme_mode", ev.target.value)}
+          >
+            <option value="auto">Automatisch (Volg Home Assistant)</option>
+            <option value="dark">Donker (Dark Mode)</option>
+            <option value="light">Licht (Light Mode)</option>
+          </select>
+        </div>
+
+        <div class="section-title">Sensoren & Telemetrie</div>
+
+        <div class="form-row">
+          <label>Batterij Percentage (%)</label>
+          <input
+            type="text"
+            placeholder="sensor.geely_battery_level"
+            .value=${e.battery || ""}
+            @change=${(ev: any) => this._valueChanged("battery", ev.target.value, true)}
+          />
+        </div>
+
+        <div class="form-row">
+          <label>Elektrisch Bereik (km)</label>
+          <input
+            type="text"
+            placeholder="sensor.geely_electric_range"
+            .value=${e.electric_range || ""}
+            @change=${(ev: any) => this._valueChanged("electric_range", ev.target.value, true)}
+          />
+        </div>
+
+        <div class="form-row">
+          <label>Brandstof Bereik (km)</label>
+          <input
+            type="text"
+            placeholder="sensor.geely_fuel_range"
+            .value=${e.fuel_range || ""}
+            @change=${(ev: any) => this._valueChanged("fuel_range", ev.target.value, true)}
+          />
+        </div>
+
+        <div class="form-row">
+          <label>Brandstof Niveau (%)</label>
+          <input
+            type="text"
+            placeholder="sensor.geely_fuel_level"
+            .value=${e.fuel_level || ""}
+            @change=${(ev: any) => this._valueChanged("fuel_level", ev.target.value, true)}
+          />
+        </div>
+
+        <div class="form-row">
+          <label>Laadkabel Aangesloten Sensor</label>
+          <input
+            type="text"
+            placeholder="binary_sensor.geely_charger_plug"
+            .value=${e.charging_connection_status || e.charger_plug || ""}
+            @change=${(ev: any) => this._valueChanged("charging_connection_status", ev.target.value, true)}
+          />
+        </div>
+
+        <div class="form-row">
+          <label>Laadstatus Sensor</label>
+          <input
+            type="text"
+            placeholder="sensor.geely_charging_status"
+            .value=${e.charging_status || ""}
+            @change=${(ev: any) => this._valueChanged("charging_status", ev.target.value, true)}
+          />
+        </div>
+
+        <div class="form-row">
+          <label>Laadtijd Resterend Sensor</label>
+          <input
+            type="text"
+            placeholder="sensor.geely_time_to_full_charge"
+            .value=${e.charging_time_left || ""}
+            @change=${(ev: any) => this._valueChanged("charging_time_left", ev.target.value, true)}
+          />
+        </div>
+
+        <div class="form-row">
+          <label>Vergrendeling / Deurslot (Lock)</label>
+          <input
+            type="text"
+            placeholder="lock.geely_doors"
+            .value=${e.lock || ""}
+            @change=${(ev: any) => this._valueChanged("lock", ev.target.value, true)}
+          />
+        </div>
+
+        <div class="form-row">
+          <label>Locatie / Device Tracker</label>
+          <input
+            type="text"
+            placeholder="device_tracker.geely_location"
+            .value=${e.location || ""}
+            @change=${(ev: any) => this._valueChanged("location", ev.target.value, true)}
+          />
+        </div>
+
+        <div class="section-title">Bediening & Cockpit</div>
+
+        <div class="form-row">
+          <label>Klimaatregeling (Airco / Verwarming)</label>
+          <input
+            type="text"
+            placeholder="switch.geely_ac of climate.geely_climate"
+            .value=${e.climate || ""}
+            @change=${(ev: any) => this._valueChanged("climate", ev.target.value, true)}
+          />
+        </div>
+
+        <div class="form-row">
+          <label>Voorruit Ontdooien (Defrost)</label>
+          <input
+            type="text"
+            placeholder="switch.geely_defrost"
+            .value=${e.defrost || ""}
+            @change=${(ev: any) => this._valueChanged("defrost", ev.target.value, true)}
+          />
+        </div>
+
+        <div class="form-row">
+          <label>Kofferbak Ontgrendelen</label>
+          <input
+            type="text"
+            placeholder="button.geely_unlock_trunk"
+            .value=${e.unlock_trunk || ""}
+            @change=${(ev: any) => this._valueChanged("unlock_trunk", ev.target.value, true)}
+          />
+        </div>
+
+        <div class="form-row">
+          <label>Voertuig Zoeken (Claxon / Knipperlicht)</label>
+          <input
+            type="text"
+            placeholder="button.geely_find_car"
+            .value=${e.find_car || ""}
+            @change=${(ev: any) => this._valueChanged("find_car", ev.target.value, true)}
+          />
+        </div>
+      </div>
+    `;
+  }
+
+  static styles = css`
+    .card-config {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 12px 0;
+      font-family: inherit;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary-color, #00e5ff);
+      margin-top: 10px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    label {
+      font-size: 12px;
+      font-weight: 500;
+      opacity: 0.85;
+    }
+    input, select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.25);
+      color: inherit;
+      font-size: 13px;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-color, #00e5ff);
+    }
+  `;
+}
+
+// Register custom elements for maximum compatibility
 if (!customElements.get("geely-starray-card")) {
   customElements.define("geely-starray-card", GeelyStarrayCard);
 }
 if (!customElements.get("geely-car-card")) {
   customElements.define("geely-car-card", GeelyStarrayCard);
+}
+if (!customElements.get("geely-starray-card-editor")) {
+  customElements.define("geely-starray-card-editor", GeelyStarrayCardEditor);
 }
 
 declare global {

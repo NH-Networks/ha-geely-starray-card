@@ -137,6 +137,14 @@
         <geely-starray-card id="card-app-header"></geely-starray-card>
       </div>
     </div>
+
+    <!-- Demo 5: Visual Card Editor (Lovelace UI Config) -->
+    <div class="demo-card-container" style="max-width: 420px; width: 100%;">
+      <div class="demo-label">5. Lovelace Visual Editor (GUI Config)</div>
+      <div style="background: rgba(255,255,255,0.04); border-radius: 18px; padding: 18px; border: 1px solid rgba(255,255,255,0.1);">
+        <geely-starray-card-editor id="card-editor-demo"></geely-starray-card-editor>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -279,11 +287,43 @@
     });
     card4.hass = mockHass;
 
+    // Card Editor Demo
+    const editor = document.getElementById("card-editor-demo");
+    if (editor) {
+      editor.setConfig({
+        type: "custom:geely-starray-card",
+        name: "Geely Starray EM-i",
+        header: "classic",
+        theme_mode: "auto",
+        entities: {
+          battery: "sensor.geely_starray_battery_percentage",
+          electric_range: "sensor.geely_starray_electric_range",
+          fuel_range: "sensor.geely_starray_fuel_range",
+          fuel_level: "sensor.geely_starray_fuel_level",
+          charging_connection_status: "binary_sensor.geely_starray_charger_plug",
+          charging_status: "sensor.geely_starray_charging_status",
+          charging_time_left: "sensor.geely_starray_time_to_full_charge",
+          lock: "lock.geely_starray_doors",
+          location: "device_tracker.geely_starray_location",
+          climate: "switch.geely_starray_ac",
+          defrost: "switch.geely_starray_defrost",
+          unlock_trunk: "button.geely_starray_unlock_trunk",
+          find_car: "button.geely_starray_find_car",
+        }
+      });
+      editor.hass = mockHass;
+      editor.addEventListener("config-changed", (ev) => {
+        console.log("[Editor Config Changed]", ev.detail.config);
+        card1.setConfig(ev.detail.config);
+      });
+    }
+
     function updateAllCards() {
       card1.hass = { ...mockHass };
       card2.hass = { ...mockHassCharging };
       card3.hass = { ...mockHassLight };
       card4.hass = { ...mockHass };
+      if (editor) editor.hass = { ...mockHass };
     }
 
     document.getElementById("btn-toggle-lock").addEventListener("click", () => {

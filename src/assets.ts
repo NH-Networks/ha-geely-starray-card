@@ -3,12 +3,21 @@
  * When placed in Home Assistant's `www/assets/` directory (accessed via `/local/assets/`),
  * these images provide high-resolution, perfectly tailored visuals out of the box.
  */
+const CARD_BASE_DIR = (() => {
+  try {
+    const url = new URL(".", import.meta.url).href;
+    return url.endsWith("/") ? url : url + "/";
+  } catch {
+    return "/local/";
+  }
+})();
+
 export const DEFAULT_ASSETS = {
-  parkedDark: "/local/assets/starray-white-parked-dark.jpg",
-  chargingDark: "/local/assets/starray-white-charging-dark.jpg",
-  parkedLight: "/local/assets/starray-white-parked-light.jpg",
-  chargingLight: "/local/assets/starray-white-charging-light.jpg",
-  cablePng: "/local/assets/geely-charge-cable.png",
+  parkedDark: `${CARD_BASE_DIR}assets/starray-white-parked-dark.jpg`,
+  chargingDark: `${CARD_BASE_DIR}assets/starray-white-charging-dark.jpg`,
+  parkedLight: `${CARD_BASE_DIR}assets/starray-white-parked-light.jpg`,
+  chargingLight: `${CARD_BASE_DIR}assets/starray-white-charging-light.jpg`,
+  cablePng: `${CARD_BASE_DIR}assets/geely-charge-cable.png`,
 };
 
 /**
