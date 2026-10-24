@@ -1,6 +1,5 @@
 {
   "name": "Geely Starray Card",
-  "content_in_root": true,
   "filename": "geely-starray-card.js",
   "render_readme": true
 }
