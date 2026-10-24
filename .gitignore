@@ -1,0 +1,5 @@
+node_modules/
+temp-volvo/
+*.log
+.DS_Store
+Thumbs.db
