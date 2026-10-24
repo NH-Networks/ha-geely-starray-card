@@ -1456,4 +1456,10 @@ window.customCards.push({
   preview: false,
 });
 
+console.info(
+  "%c GEELY-STARRAY-CARD %c v1.0.3 ",
+  "color: #0b0f14; background: #00e5ff; font-weight: 700; border-radius: 3px 0 0 3px; padding: 2px 4px;",
+  "color: #00e5ff; background: #121820; font-weight: 700; border-radius: 0 3px 3px 0; padding: 2px 4px;"
+);
+
 export { GeelyStarrayCardComponent as GeelyStarrayCard, GeelyStarrayCardEditorComponent as GeelyStarrayCardEditor };
