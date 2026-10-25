@@ -1,8 +1,124 @@
 # PowerShell builder for geely-starray-card.js and geely-car-card.js
+Add-Type -AssemblyName System.Drawing
+
+function Get-Base64Chunks {
+    param(
+        [string]$Path,
+        [int]$MaxWidth = 960,
+        [int]$Quality = 86,
+        [bool]$IsPng = $false,
+        [int]$ChunkSize = 80
+    )
+    
+    $fullPath = Resolve-Path $Path
+    $img = [System.Drawing.Image]::FromFile($fullPath)
+    $origW = $img.Width
+    $origH = $img.Height
+    
+    if ($origW -gt $MaxWidth) {
+        $newW = $MaxWidth
+        $newH = [int]($origH * ($MaxWidth / $origW))
+    } else {
+        $newW = $origW
+        $newH = $origH
+    }
+    
+    $bmp = New-Object System.Drawing.Bitmap($newW, $newH)
+    $g = [System.Drawing.Graphics]::FromImage($bmp)
+    $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+    $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+    $g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+    $g.CompositingQuality = [System.Drawing.Drawing2D.CompositingQuality]::HighQuality
+    $g.DrawImage($img, 0, 0, $newW, $newH)
+    $g.Dispose()
+    $img.Dispose()
+    
+    $ms = New-Object System.IO.MemoryStream
+    if ($IsPng) {
+        $bmp.Save($ms, [System.Drawing.Imaging.ImageFormat]::Png)
+        $mime = "image/png"
+    } else {
+        $codec = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | Where-Object { $_.MimeType -eq "image/jpeg" }
+        $ep = New-Object System.Drawing.Imaging.EncoderParameters(1)
+        $ep.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter([System.Drawing.Imaging.Encoder]::Quality, [long]$Quality)
+        $bmp.Save($ms, $codec, $ep)
+        $mime = "image/jpeg"
+    }
+    $bmp.Dispose()
+    
+    $bytes = $ms.ToArray()
+    $ms.Dispose()
+    
+    $b64 = [Convert]::ToBase64String($bytes)
+    $prefix = "data:$mime;base64,"
+    $fullStr = $prefix + $b64
+    
+    $chunks = [System.Collections.Generic.List[string]]::new()
+    for ($i = 0; $i -lt $fullStr.Length; $i += $ChunkSize) {
+        $len = [Math]::Min($ChunkSize, $fullStr.Length - $i)
+        $chunks.Add($fullStr.Substring($i, $len))
+    }
+    return $chunks
+}
+
+function Format-JsBase64Array($varName, $chunks) {
+    $sb = [System.Text.StringBuilder]::new()
+    [void]$sb.AppendLine("const $varName = [")
+    for ($i = 0; $i -lt $chunks.Count; $i++) {
+        $comma = if ($i -lt $chunks.Count - 1) { "," } else { "" }
+        [void]$sb.AppendLine("  `"$($chunks[$i])`"$comma")
+    }
+    [void]$sb.AppendLine("].join(`"`");")
+    return $sb.ToString()
+}
+
+Write-Host "Optimizing and encoding vehicle renders into Base64 data-URIs..."
+$assetsDir = Join-Path $PSScriptRoot "assets"
+
+$imgConfig = @(
+    @{ Var = "EMBEDDED_PRESS_FRONT"; Key = "press_front"; File = "starray-white-front-press.png"; MaxW = 960; Q = 86; IsPng = $false },
+    @{ Var = "EMBEDDED_PRESS_REAR"; Key = "press_rear"; File = "starray-white-rear-press.jpg"; MaxW = 960; Q = 86; IsPng = $false },
+    @{ Var = "EMBEDDED_PLAZA"; Key = "plaza"; File = "starray-white-plaza-press.jpg"; MaxW = 960; Q = 86; IsPng = $false },
+    @{ Var = "EMBEDDED_COCKPIT"; Key = "cockpit"; File = "starray-white-cockpit.jpg"; MaxW = 960; Q = 86; IsPng = $false },
+    @{ Var = "EMBEDDED_PARKED_DARK"; Key = "parked_dark"; File = "starray-white-parked-dark.jpg"; MaxW = 960; Q = 86; IsPng = $false },
+    @{ Var = "EMBEDDED_PARKED_LIGHT"; Key = "parked_light"; File = "starray-white-parked-light.jpg"; MaxW = 960; Q = 86; IsPng = $false },
+    @{ Var = "EMBEDDED_CHARGING_DARK"; Key = "charging_dark"; File = "starray-white-charging-dark.jpg"; MaxW = 960; Q = 86; IsPng = $false },
+    @{ Var = "EMBEDDED_CHARGING_LIGHT"; Key = "charging_light"; File = "starray-white-charging-light.jpg"; MaxW = 960; Q = 86; IsPng = $false },
+    @{ Var = "EMBEDDED_CABLE"; Key = "cable"; File = "geely-charge-cable.png"; MaxW = 800; Q = 100; IsPng = $true }
+)
+
+$imgDefs = [System.Text.StringBuilder]::new()
+[void]$imgDefs.AppendLine("// 100% Self-Contained High-Res Vehicle & Cable Renders (Zero 404s)")
+
+foreach ($item in $imgConfig) {
+    $filePath = Join-Path $assetsDir $item.File
+    $chunks = Get-Base64Chunks -Path $filePath -MaxWidth $item.MaxW -Quality $item.Q -IsPng $item.IsPng
+    $jsArr = Format-JsBase64Array $item.Var $chunks
+    [void]$imgDefs.AppendLine($jsArr)
+    Write-Host "  -> Embedded $($item.Key) ($($item.File)): $($chunks.Count) chunks"
+}
+
+[void]$imgDefs.AppendLine(@"
+const EMBEDDED_IMAGES = {
+  press_front: EMBEDDED_PRESS_FRONT,
+  press_rear: EMBEDDED_PRESS_REAR,
+  plaza: EMBEDDED_PLAZA,
+  cockpit: EMBEDDED_COCKPIT,
+  parked_dark: EMBEDDED_PARKED_DARK,
+  parked_light: EMBEDDED_PARKED_LIGHT,
+  charging_dark: EMBEDDED_CHARGING_DARK,
+  charging_light: EMBEDDED_CHARGING_LIGHT,
+  cable: EMBEDDED_CABLE
+};
+"@)
+
+$embeddedJsCode = $imgDefs.ToString()
+
 $runtimeFile = Join-Path $PSScriptRoot "src/lit-runtime.js"
 $litLines = [System.IO.File]::ReadAllText($runtimeFile)
 
 $geelyCode = @'
+
 
 // Geely Starray Card Icons
 const GEELY_LOGO = {
@@ -423,8 +539,8 @@ class GeelyStarrayCardComponent extends ct {
         img?.fallback;
       if (fromConf) return fromConf;
       return isDark
-        ? resolveAsset("./assets/starray-white-charging-dark.jpg")
-        : resolveAsset("./assets/starray-white-charging-light.jpg");
+        ? EMBEDDED_IMAGES.charging_dark
+        : EMBEDDED_IMAGES.charging_light;
     }
 
     const fromConf =
@@ -434,21 +550,21 @@ class GeelyStarrayCardComponent extends ct {
 
     switch (this.config?.image_preset) {
       case "press_front":
-        return resolveAsset("./assets/starray-white-front-press.png");
+        return EMBEDDED_IMAGES.press_front;
       case "press_rear":
-        return resolveAsset("./assets/starray-white-rear-press.jpg");
+        return EMBEDDED_IMAGES.press_rear;
       case "plaza":
-        return resolveAsset("./assets/starray-white-plaza-press.jpg");
+        return EMBEDDED_IMAGES.plaza;
       case "cockpit":
-        return resolveAsset("./assets/starray-white-cockpit.jpg");
+        return EMBEDDED_IMAGES.cockpit;
       case "studio_light":
-        return resolveAsset("./assets/starray-white-parked-light.jpg");
+        return EMBEDDED_IMAGES.parked_light;
       case "studio_dark":
-        return resolveAsset("./assets/starray-white-parked-dark.jpg");
+        return EMBEDDED_IMAGES.parked_dark;
       default:
         return isDark
-          ? resolveAsset("./assets/starray-white-parked-dark.jpg")
-          : resolveAsset("./assets/starray-white-parked-light.jpg");
+          ? EMBEDDED_IMAGES.parked_dark
+          : EMBEDDED_IMAGES.parked_light;
     }
   }
 
@@ -597,7 +713,7 @@ class GeelyStarrayCardComponent extends ct {
 
   renderCable() {
     const overlay = resolveGeelyOverlay(this.config?.model, this.config?.overlay);
-    const src = this.config?.images?.fallback || resolveAsset("./assets/geely-charge-cable.png");
+    const src = this.config?.images?.fallback || EMBEDDED_IMAGES.cable;
     return J`
       <img
         class="cable"
@@ -1572,7 +1688,7 @@ window.customCards.push({
 });
 
 console.info(
-  "%c GEELY-STARRAY-CARD %c v1.0.6 ",
+  "%c GEELY-STARRAY-CARD %c v1.0.7 ",
   "color: #0b0f14; background: #00e5ff; font-weight: 700; border-radius: 3px 0 0 3px; padding: 2px 4px;",
   "color: #00e5ff; background: #121820; font-weight: 700; border-radius: 0 3px 3px 0; padding: 2px 4px;"
 );
@@ -1581,11 +1697,12 @@ export {
   GeelyStarrayCardComponent as GeelyStarrayCard,
   GeelyCarCardComponent as GeelyCarCard,
   GeelyStarrayCardEditorComponent as GeelyStarrayCardEditor,
-  GeelyCarCardEditorComponent as GeelyCarCardEditor
+  GeelyCarCardEditorComponent as GeelyCarCardEditor,
+  EMBEDDED_IMAGES as IMAGES
 };
 '@
 
-$fullContent = $litLines + "`n" + $geelyCode
+$fullContent = $litLines + "`n" + $embeddedJsCode + "`n" + $geelyCode
 Set-Content -Path "d:\Development\Geely\ha-card\geely-starray-card.js" -Value $fullContent -Encoding utf8
 Copy-Item "d:\Development\Geely\ha-card\geely-starray-card.js" "d:\Development\Geely\ha-card\geely-car-card.js" -Force
 Write-Host "Built geely-starray-card.js and geely-car-card.js successfully!"

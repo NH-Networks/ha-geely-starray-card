@@ -1,6 +1,6 @@
 {
   "name": "ha-geely-starray-card",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A Home Assistant Lovelace card for the 2026 Geely Starray EM-i (White) Super Hybrid, PHEV, BEV and ICE vehicles.",
   "license": "MIT",
   "type": "module",

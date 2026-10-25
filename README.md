@@ -2,7 +2,10 @@
 
 Een premium [Home Assistant](https://www.home-assistant.io/) Lovelace dashboard card voor de **2026 Geely Starray EM-i (Wit)**, Geely Boyue L en aanverwante Geely modellen (Super Hybrid, PHEV, BEV en ICE). Geïnspireerd door de officiële Geely Auto / Geely Global mobiele app interface met realtime voertuigtelemetrie, actieradius, laadanimatie en interactieve cockpit-bediening.
 
-Wordt standaard geleverd met **fotorealistische renders van de Geely Starray EM-i in kristalwit**, zowel in Dark Mode als Light Mode, voor geparkeerde en oplaadstatussen.
+Wordt standaard geleverd met **100% self-contained fotorealistische renders van de Geely Starray EM-i in kristalwit** (Base64 data-URIs direct in de bundle ingesloten, waardoor er nooit meer ontbrekende bestanden of 404-errors zijn), zowel in Dark Mode als Light Mode, voor geparkeerde en oplaadstatussen.
+
+> [!TIP]
+> **v1.0.7 Self-Contained:** Alle 8 voertuigrenders en de laadkabel zijn direct in de component gebundeld. Zowel via HACS als bij handmatige installatie werkt de kaart direct 'out of the box' op mobiel, tablet, pc en wall displays (zoals de Shelly Wall Display X2i).
 
 ![Geely Starray Card Overzicht](assets/geely-card-overview.jpg)
 
