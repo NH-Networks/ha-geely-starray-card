@@ -3,26 +3,25 @@
  * When placed in Home Assistant's `www/assets/` directory (accessed via `/local/assets/`),
  * these images provide high-resolution, perfectly tailored visuals out of the box.
  */
-const CARD_BASE_DIR = (() => {
+function resolveAsset(relPath: string): string {
   try {
-    const url = new URL(".", import.meta.url).href;
-    return url.endsWith("/") ? url : url + "/";
+    return new URL(relPath, import.meta.url).href;
   } catch {
-    return "/local/";
+    return `/hacsfiles/ha-geely-starray-card/${relPath.replace(/^\.?\//, "")}`;
   }
-})();
+}
 
 export const DEFAULT_ASSETS = {
-  parkedDark: `${CARD_BASE_DIR}assets/starray-white-parked-dark.jpg`,
-  chargingDark: `${CARD_BASE_DIR}assets/starray-white-charging-dark.jpg`,
-  parkedLight: `${CARD_BASE_DIR}assets/starray-white-parked-light.jpg`,
-  chargingLight: `${CARD_BASE_DIR}assets/starray-white-charging-light.jpg`,
-  cablePng: `${CARD_BASE_DIR}assets/geely-charge-cable.png`,
+  parkedDark: resolveAsset("./assets/starray-white-parked-dark.jpg"),
+  chargingDark: resolveAsset("./assets/starray-white-charging-dark.jpg"),
+  parkedLight: resolveAsset("./assets/starray-white-parked-light.jpg"),
+  chargingLight: resolveAsset("./assets/starray-white-charging-light.jpg"),
+  cablePng: resolveAsset("./assets/geely-charge-cable.png"),
   // Official European Launch & User-Provided LHD Press Assets
-  pressFront: `${CARD_BASE_DIR}assets/starray-white-front-press.png`,
-  pressRear: `${CARD_BASE_DIR}assets/starray-white-rear-press.jpg`,
-  plaza: `${CARD_BASE_DIR}assets/starray-white-plaza-press.jpg`,
-  cockpit: `${CARD_BASE_DIR}assets/starray-white-cockpit.jpg`,
+  pressFront: resolveAsset("./assets/starray-white-front-press.png"),
+  pressRear: resolveAsset("./assets/starray-white-rear-press.jpg"),
+  plaza: resolveAsset("./assets/starray-white-plaza-press.jpg"),
+  cockpit: resolveAsset("./assets/starray-white-cockpit.jpg"),
 };
 
 /**

@@ -56,11 +56,13 @@ export class GeelyStarrayCard extends LitElement {
     if (!config) {
       throw new Error("geely-starray-card: Invalid card configuration");
     }
+    const isCompact = config.compact === true;
     this.config = {
       name: "Geely Starray EM-i",
       show_actions: true,
       header: "classic",
       model: "starray-em-i",
+      aspect_ratio: isCompact ? "16 / 10" : (config.aspect_ratio || "1 / 1"),
       ...config,
       entities: config.entities || {},
     };
@@ -1211,21 +1213,29 @@ export class GeelyStarrayCardEditor extends LitElement {
   `;
 }
 
-// Register custom elements for maximum compatibility
+// Register custom elements for maximum compatibility using subclasses to satisfy W3C unique constructor rule
+export class GeelyCarCard extends GeelyStarrayCard {}
+export class GeelyCarCardEditor extends GeelyStarrayCardEditor {}
+
 if (!customElements.get("geely-starray-card")) {
   customElements.define("geely-starray-card", GeelyStarrayCard);
 }
 if (!customElements.get("geely-car-card")) {
-  customElements.define("geely-car-card", GeelyStarrayCard);
+  customElements.define("geely-car-card", GeelyCarCard);
 }
 if (!customElements.get("geely-starray-card-editor")) {
   customElements.define("geely-starray-card-editor", GeelyStarrayCardEditor);
+}
+if (!customElements.get("geely-car-card-editor")) {
+  customElements.define("geely-car-card-editor", GeelyCarCardEditor);
 }
 
 declare global {
   interface HTMLElementTagNameMap {
     "geely-starray-card": GeelyStarrayCard;
-    "geely-car-card": GeelyStarrayCard;
+    "geely-car-card": GeelyCarCard;
+    "geely-starray-card-editor": GeelyStarrayCardEditor;
+    "geely-car-card-editor": GeelyCarCardEditor;
   }
   interface Window {
     customCards?: { type: string; name: string; description: string; preview?: boolean }[];
@@ -1247,7 +1257,7 @@ window.customCards.push({
 });
 
 console.info(
-  "%c GEELY-STARRAY-CARD %c v1.0.3 ",
+  "%c GEELY-STARRAY-CARD %c v1.0.6 ",
   "color: #0b0f14; background: #00e5ff; font-weight: 700; border-radius: 3px 0 0 3px; padding: 2px 4px;",
   "color: #00e5ff; background: #121820; font-weight: 700; border-radius: 0 3px 3px 0; padding: 2px 4px;"
 );

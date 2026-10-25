@@ -32,7 +32,11 @@ const pt={attribute:!0,type:String,converter:q,reflect:!1,hasChanged:y},dt=(t=pt
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */function ut(t){return(e,i)=>"object"==typeof i?dt(t,e,i):((t,e,i)=>{const s=e.hasOwnProperty(i);return e.constructor.createProperty(i,t),s?Object.getOwnPropertyDescriptor(e,i):void 0})(t,e,i)}
-/**
+function ft(t){return ut(Object.assign({},t,{state:!0,attribute:!1}))}
+const css = (strings, ...values) => {
+  const cssText = typeof strings === "string" ? strings : strings.reduce((acc, str, i) => acc + str + (values[i] !== undefined ? values[i] : ""), "");
+  return a(cssText);
+};
 
 
 
@@ -174,15 +178,25 @@ function getLabel(labels, key, locale = "nl") {
   return dict[key] ?? LABELS_NL[key] ?? "";
 }
 
-// Dynamic Script Base Directory for Zero-Config Asset Loading
-const SCRIPT_BASE_DIR = (() => {
+// Dynamic Asset Resolver using import.meta.url with absolute fallback
+function resolveAsset(relPath) {
   try {
-    const url = new URL(".", import.meta.url).href;
-    return url.endsWith("/") ? url : url + "/";
+    return new URL(relPath, import.meta.url).href;
   } catch {
-    return "/local/";
+    return "/hacsfiles/ha-geely-starray-card/" + relPath.replace(/^\.?\//, "");
   }
-})();
+}
+
+function formatAspectRatio(ratio, isCompact = false) {
+  if (!ratio) return isCompact ? "16 / 10" : "1 / 1";
+  const str = String(ratio).trim();
+  if (str.includes(":")) return str.replace(":", " / ");
+  if (str.includes("/")) {
+    const parts = str.split("/");
+    return `${parts[0].trim()} / ${parts[1].trim()}`;
+  }
+  return str;
+}
 
 // Default Overlay for 2026 Geely Starray EM-i (White)
 const DEFAULT_GEELY_OVERLAY = {
@@ -247,6 +261,7 @@ function roundVal(n) {
 }
 
 function isVehicleConnected(hass, entities) {
+  if (!entities) return false;
   const plugEntity = entities.charger_plug || entities.charging_connection_status;
   if (!plugEntity) return false;
   const val = (getHaState(hass, plugEntity) || "").toLowerCase().trim();
@@ -257,6 +272,7 @@ function isVehicleConnected(hass, entities) {
 }
 
 function isVehicleCharging(hass, entities) {
+  if (!entities) return false;
   const chargeStatusEntity = entities.charging_status;
   if (!chargeStatusEntity) return false;
   const val = (getHaState(hass, chargeStatusEntity) || "").toLowerCase().trim();
@@ -265,6 +281,7 @@ function isVehicleCharging(hass, entities) {
 }
 
 function formatTimeLeft(hass, entities, labels) {
+  if (!entities) return null;
   const id = entities.charging_time_left || entities.time_to_full_charge;
   if (!id) return null;
   const raw = getHaState(hass, id);
@@ -272,7 +289,7 @@ function formatTimeLeft(hass, entities, labels) {
   const n = Number(raw);
   let text;
   if (Number.isFinite(n)) {
-    const unit = hass.states[id]?.attributes?.unit_of_measurement;
+    const unit = getHaAttr(hass, id, "unit_of_measurement");
     const minutes = Math.round(unit === "h" ? n * 60 : unit === "s" ? n / 60 : n);
     if (minutes <= 0) return null;
     const h = Math.floor(minutes / 60);
@@ -297,13 +314,15 @@ class GeelyStarrayCardComponent extends ct {
     if (!config) {
       throw new Error("geely-starray-card: Invalid card configuration");
     }
+    const isCompact = config.compact === true;
     this.config = {
       name: "Geely Starray EM-i",
       show_actions: true,
       header: "classic",
       model: "starray-em-i",
+      aspect_ratio: isCompact ? "16 / 10" : (config.aspect_ratio || "1 / 1"),
       ...config,
-      entities: config.entities || {},
+      entities: { ...(config.entities || {}) },
     };
   }
 
@@ -321,6 +340,7 @@ class GeelyStarrayCardComponent extends ct {
       name: "Geely Starray EM-i",
       model: "starray-em-i",
       header: "classic",
+      aspect_ratio: "16 / 10",
       entities: {
         battery: "sensor.geely_starray_battery_percentage",
         electric_range: "sensor.geely_starray_electric_range",
@@ -340,21 +360,21 @@ class GeelyStarrayCardComponent extends ct {
   }
 
   get isDarkMode() {
-    if (this.config.theme_mode === "dark") return true;
-    if (this.config.theme_mode === "light") return false;
+    if (this.config?.theme_mode === "dark") return true;
+    if (this.config?.theme_mode === "light") return false;
     return this.hass?.themes?.darkMode ?? true;
   }
 
   get appHeader() {
-    return this.config.header === "app";
+    return this.config?.header === "app";
   }
 
   headerMain(kind, chargeState) {
-    const e = this.config.entities;
+    const e = this.config?.entities || {};
     const dteBattery = getHaNumState(this.hass, e.electric_range || e.distance_to_empty_battery) ?? 0;
     const dteTank = getHaNumState(this.hass, e.fuel_range || e.distance_to_empty_tank) ?? 0;
     const battery = getHaNumState(this.hass, e.battery) ?? 0;
-    const labels = this.config.labels;
+    const labels = this.config?.labels;
 
     if (kind === "ice") {
       return {
@@ -381,11 +401,11 @@ class GeelyStarrayCardComponent extends ct {
   }
 
   headerSub1(kind, chargeState) {
-    const e = this.config.entities;
+    const e = this.config?.entities || {};
     const dteBattery = getHaNumState(this.hass, e.electric_range || e.distance_to_empty_battery) ?? 0;
     const fuelAmount = getHaNumState(this.hass, e.fuel_amount || e.fuel_level);
     const tankCapacity = e.fuel_tank_capacity_l;
-    const labels = this.config.labels;
+    const labels = this.config?.labels;
     const batteryUnit = getDistanceUnit(this.hass, e.electric_range || e.distance_to_empty_battery);
 
     const fuelSub = () => {
@@ -424,22 +444,23 @@ class GeelyStarrayCardComponent extends ct {
 
   headerSub2(kind, chargeState) {
     if (kind !== "hybrid" || (chargeState === "charging" && !this.appHeader)) return null;
-    const tankEntity = this.config.entities.fuel_range || this.config.entities.distance_to_empty_tank;
+    const e = this.config?.entities || {};
+    const tankEntity = e.fuel_range || e.distance_to_empty_tank;
     if (!tankEntity) return null;
     const dteTank = getHaNumState(this.hass, tankEntity) ?? 0;
-    return `${roundVal(dteTank)} ${getDistanceUnit(this.hass, tankEntity)} ${getLabel(this.config.labels, "fuel")}`;
+    return `${roundVal(dteTank)} ${getDistanceUnit(this.hass, tankEntity)} ${getLabel(this.config?.labels, "fuel")}`;
   }
 
   resolveCarImage(connected, isDark) {
-    const img = this.config.images;
+    const img = this.config?.images;
     if (connected) {
       const fromConf =
         (img && resolveHaImage(this.hass, img.charging || img.exterior_back, "exterior_back")) ||
         img?.fallback;
       if (fromConf) return fromConf;
       return isDark
-        ? (SCRIPT_BASE_DIR + "assets/starray-white-charging-dark.jpg")
-        : (SCRIPT_BASE_DIR + "assets/starray-white-charging-light.jpg");
+        ? resolveAsset("./assets/starray-white-charging-dark.jpg")
+        : resolveAsset("./assets/starray-white-charging-light.jpg");
     }
 
     const fromConf =
@@ -447,30 +468,32 @@ class GeelyStarrayCardComponent extends ct {
       img?.fallback;
     if (fromConf) return fromConf;
 
-    switch (this.config.image_preset) {
+    switch (this.config?.image_preset) {
       case "press_front":
-        return SCRIPT_BASE_DIR + "assets/starray-white-front-press.png";
+        return resolveAsset("./assets/starray-white-front-press.png");
       case "press_rear":
-        return SCRIPT_BASE_DIR + "assets/starray-white-rear-press.jpg";
+        return resolveAsset("./assets/starray-white-rear-press.jpg");
       case "plaza":
-        return SCRIPT_BASE_DIR + "assets/starray-white-plaza-press.jpg";
+        return resolveAsset("./assets/starray-white-plaza-press.jpg");
       case "cockpit":
-        return SCRIPT_BASE_DIR + "assets/starray-white-cockpit.jpg";
+        return resolveAsset("./assets/starray-white-cockpit.jpg");
       case "studio_light":
-        return SCRIPT_BASE_DIR + "assets/starray-white-parked-light.jpg";
+        return resolveAsset("./assets/starray-white-parked-light.jpg");
       case "studio_dark":
-        return SCRIPT_BASE_DIR + "assets/starray-white-parked-dark.jpg";
+        return resolveAsset("./assets/starray-white-parked-dark.jpg");
       default:
         return isDark
-          ? (SCRIPT_BASE_DIR + "assets/starray-white-parked-dark.jpg")
-          : (SCRIPT_BASE_DIR + "assets/starray-white-parked-light.jpg");
+          ? resolveAsset("./assets/starray-white-parked-dark.jpg")
+          : resolveAsset("./assets/starray-white-parked-light.jpg");
     }
   }
 
   render() {
-    if (!this.hass || !this.config) return J``;
+    if (!this.config) return J``;
 
-    const e = this.config.entities;
+    const e = this.config.entities || {};
+    const isCompact = this.config.compact === true;
+    const aspectRatio = formatAspectRatio(this.config.aspect_ratio, isCompact);
     const hasBattery = !!(e.battery || e.electric_range || e.distance_to_empty_battery);
     const hasFuel = !!(e.fuel_range || e.distance_to_empty_tank || e.fuel_amount || e.fuel_level);
     const kind = hasBattery && hasFuel ? "hybrid" : hasBattery ? "bev" : hasFuel ? "ice" : "hybrid";
@@ -501,8 +524,8 @@ class GeelyStarrayCardComponent extends ct {
     return J`
       <ha-card>
         <div
-          class="geely-card ${isDark ? "theme-dark" : "theme-light"} ${this.config.show_actions !== false ? "clickable" : ""}"
-          style="--geely-aspect-ratio: ${this.config.aspect_ratio || "1 / 1"};"
+          class="geely-card ${isDark ? "theme-dark" : "theme-light"} ${isCompact ? "compact" : ""} ${this.config.show_actions !== false ? "clickable" : ""}"
+          style="--geely-aspect-ratio: ${aspectRatio};"
           @click=${this.openActions}
         >
           <!-- Background Car Render -->
@@ -609,8 +632,8 @@ class GeelyStarrayCardComponent extends ct {
   }
 
   renderCable() {
-    const overlay = resolveGeelyOverlay(this.config.model, this.config.overlay);
-    const src = this.config.images?.fallback || (SCRIPT_BASE_DIR + "assets/geely-charge-cable.png");
+    const overlay = resolveGeelyOverlay(this.config?.model, this.config?.overlay);
+    const src = this.config?.images?.fallback || resolveAsset("./assets/geely-charge-cable.png");
     return J`
       <img
         class="cable"
@@ -622,7 +645,7 @@ class GeelyStarrayCardComponent extends ct {
   }
 
   openActions(ev) {
-    if (this.config.show_actions === false) return;
+    if (this.config?.show_actions === false) return;
     ev.stopPropagation();
     this.actionsOpen = true;
   }
@@ -632,14 +655,15 @@ class GeelyStarrayCardComponent extends ct {
   }
 
   callLock(lock) {
-    const entityId = this.config.entities.lock;
-    if (!entityId) return;
+    const entityId = this.config?.entities?.lock;
+    if (!entityId || !this.hass) return;
     this.hass.callService("lock", lock ? "lock" : "unlock", { entity_id: entityId });
     this.closeActions();
   }
 
   toggleClimate() {
-    const { climate, start_climatisation, stop_climatisation } = this.config.entities;
+    const { climate, start_climatisation, stop_climatisation } = this.config?.entities || {};
+    if (!this.hass) return;
     if (climate) {
       if (climate.startsWith("switch.")) {
         this.hass.callService("switch", "toggle", { entity_id: climate });
@@ -658,16 +682,16 @@ class GeelyStarrayCardComponent extends ct {
   }
 
   toggleDefrost() {
-    const defrost = this.config.entities.defrost;
-    if (defrost) {
+    const defrost = this.config?.entities?.defrost;
+    if (defrost && this.hass) {
       this.hass.callService("switch", "toggle", { entity_id: defrost });
       this.defrostOn = !this.defrostOn;
     }
   }
 
   triggerTrunk() {
-    const trunk = this.config.entities.unlock_trunk;
-    if (trunk) {
+    const trunk = this.config?.entities?.unlock_trunk;
+    if (trunk && this.hass) {
       if (trunk.startsWith("button.")) {
         this.hass.callService("button", "press", { entity_id: trunk });
       } else if (trunk.startsWith("cover.")) {
@@ -677,8 +701,8 @@ class GeelyStarrayCardComponent extends ct {
   }
 
   triggerFindCar() {
-    const find = this.config.entities.find_car;
-    if (find) {
+    const find = this.config?.entities?.find_car;
+    if (find && this.hass) {
       this.hass.callService("button", "press", { entity_id: find });
     }
   }
@@ -766,7 +790,7 @@ class GeelyStarrayCardComponent extends ct {
   }
 }
 
-GeelyStarrayCardComponent.styles = et`
+GeelyStarrayCardComponent.styles = css`
   :host {
     --geely-cyan: #00e5ff;
     --geely-teal: #00d2c4;
@@ -1152,7 +1176,105 @@ GeelyStarrayCardComponent.styles = et`
     width: 24px;
     height: 24px;
   }
+
+  /* Compact Mode (Optimized for Shelly Wall Display X2i and tight viewports) */
+  .geely-card.compact .header,
+  @media (max-height: 480px), (max-width: 440px) {
+    .header {
+      top: 12px;
+      left: 14px;
+      gap: 3px;
+    }
+    .brand-row {
+      gap: 6px;
+    }
+    .geely-badge {
+      width: 18px;
+      height: 9px;
+    }
+    .vehicle-name {
+      font-size: 11px;
+    }
+    .main-value {
+      font-size: 38px;
+    }
+    .main-unit {
+      font-size: 20px;
+    }
+    .pill {
+      padding: 2px 8px;
+      font-size: 11px;
+      border-radius: 14px;
+    }
+    .icon-svg {
+      width: 12px;
+      height: 12px;
+    }
+    .status-badge {
+      left: 14px;
+      bottom: 12px;
+      padding: 3px 10px;
+      font-size: 11px;
+    }
+    .time-left-badge {
+      right: 14px;
+      bottom: 12px;
+      padding: 3px 10px;
+      font-size: 11px;
+    }
+  }
+
+  .geely-card.compact .header {
+    top: 12px;
+    left: 14px;
+    gap: 3px;
+  }
+  .geely-card.compact .brand-row {
+    gap: 6px;
+  }
+  .geely-card.compact .geely-badge {
+    width: 18px;
+    height: 9px;
+  }
+  .geely-card.compact .vehicle-name {
+    font-size: 11px;
+  }
+  .geely-card.compact .main-value {
+    font-size: 38px;
+  }
+  .geely-card.compact .main-unit {
+    font-size: 20px;
+  }
+  .geely-card.compact .pill {
+    padding: 2px 8px;
+    font-size: 11px;
+    border-radius: 14px;
+  }
+  .geely-card.compact .icon-svg {
+    width: 12px;
+    height: 12px;
+  }
+  .geely-card.compact .status-badge {
+    left: 14px;
+    bottom: 12px;
+    padding: 3px 10px;
+    font-size: 11px;
+  }
+  .geely-card.compact .time-left-badge {
+    right: 14px;
+    bottom: 12px;
+    padding: 3px 10px;
+    font-size: 11px;
+  }
 `;
+
+GeelyStarrayCardComponent.properties = {
+  hass: { attribute: false },
+  config: { state: true },
+  actionsOpen: { state: true },
+  climateOn: { state: true },
+  defrostOn: { state: true },
+};
 
 t([ut({ attribute: !1 })], GeelyStarrayCardComponent.prototype, "hass", void 0);
 t([ft()], GeelyStarrayCardComponent.prototype, "config", void 0);
@@ -1162,8 +1284,20 @@ t([ft()], GeelyStarrayCardComponent.prototype, "defrostOn", void 0);
 
 // Visual Card Editor for Lovelace UI
 class GeelyStarrayCardEditorComponent extends ct {
+  static get properties() {
+    return {
+      hass: { attribute: false },
+      _config: { state: true },
+    };
+  }
+
   setConfig(config) {
-    this._config = { ...config, entities: { ...config.entities } };
+    this._config = {
+      name: "Geely Starray EM-i",
+      model: "starray-em-i",
+      ...config,
+      entities: { ...(config?.entities || {}) },
+    };
   }
 
   _valueChanged(key, value, isEntity = false) {
@@ -1249,6 +1383,17 @@ class GeelyStarrayCardEditorComponent extends ct {
             <option value="16 / 9">16:9 Cinematic</option>
             <option value="4 / 3">4:3 Klassiek</option>
           </select>
+        </div>
+
+        <div class="form-row">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input
+              type="checkbox"
+              ?checked=${this._config.compact === true}
+              @change=${(ev) => this._valueChanged("compact", ev.target.checked)}
+            />
+            Compact Modus (Optimaal voor Shelly Wall Display X2i / 415px schermhoogte)
+          </label>
         </div>
 
         <div class="section-title">Sensoren & Telemetrie</div>
@@ -1389,7 +1534,7 @@ class GeelyStarrayCardEditorComponent extends ct {
   }
 }
 
-GeelyStarrayCardEditorComponent.styles = et`
+GeelyStarrayCardEditorComponent.styles = css`
   .card-config {
     display: flex;
     flex-direction: column;
@@ -1432,14 +1577,20 @@ GeelyStarrayCardEditorComponent.styles = et`
 t([ut({ attribute: !1 })], GeelyStarrayCardEditorComponent.prototype, "hass", void 0);
 t([ft()], GeelyStarrayCardEditorComponent.prototype, "_config", void 0);
 
+class GeelyCarCardComponent extends GeelyStarrayCardComponent {}
+class GeelyCarCardEditorComponent extends GeelyStarrayCardEditorComponent {}
+
 if (!customElements.get("geely-starray-card")) {
   customElements.define("geely-starray-card", GeelyStarrayCardComponent);
 }
 if (!customElements.get("geely-car-card")) {
-  customElements.define("geely-car-card", GeelyStarrayCardComponent);
+  customElements.define("geely-car-card", GeelyCarCardComponent);
 }
 if (!customElements.get("geely-starray-card-editor")) {
   customElements.define("geely-starray-card-editor", GeelyStarrayCardEditorComponent);
+}
+if (!customElements.get("geely-car-card-editor")) {
+  customElements.define("geely-car-card-editor", GeelyCarCardEditorComponent);
 }
 
 window.customCards = window.customCards || [];
@@ -1457,9 +1608,14 @@ window.customCards.push({
 });
 
 console.info(
-  "%c GEELY-STARRAY-CARD %c v1.0.5 ",
+  "%c GEELY-STARRAY-CARD %c v1.0.6 ",
   "color: #0b0f14; background: #00e5ff; font-weight: 700; border-radius: 3px 0 0 3px; padding: 2px 4px;",
   "color: #00e5ff; background: #121820; font-weight: 700; border-radius: 0 3px 3px 0; padding: 2px 4px;"
 );
 
-export { GeelyStarrayCardComponent as GeelyStarrayCard, GeelyStarrayCardEditorComponent as GeelyStarrayCardEditor };
+export {
+  GeelyStarrayCardComponent as GeelyStarrayCard,
+  GeelyCarCardComponent as GeelyCarCard,
+  GeelyStarrayCardEditorComponent as GeelyStarrayCardEditor,
+  GeelyCarCardEditorComponent as GeelyCarCardEditor
+};

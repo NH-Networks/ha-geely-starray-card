@@ -98,6 +98,8 @@ export interface GeelyCardConfig {
   image_preset?: "press_front" | "press_rear" | "plaza" | "studio_dark" | "studio_light" | "cockpit";
   /** Card aspect ratio, e.g. "1/1" (default), "16/10", "16/9", "4/3". */
   aspect_ratio?: string;
+  /** Compact mode for Shelly Wall Display X2i and small displays. Defaults to false. */
+  compact?: boolean;
 }
 
 export type ChargeState = "idle" | "scheduled" | "charging";

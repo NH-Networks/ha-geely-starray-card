@@ -241,82 +241,84 @@
       find_car: "button.geely_starray_find_car",
     };
 
-    // 1. Press Front (16:10)
-    const card1 = document.getElementById("card-press-front");
-    card1.setConfig({
-      type: "custom:geely-starray-card",
-      name: "Geely Starray EM-i",
-      image_preset: "press_front",
-      aspect_ratio: "16 / 10",
-      entities: baseEntities
-    });
-    card1.hass = mockHass;
+    customElements.whenDefined("geely-starray-card").then(() => {
+      // 1. Press Front (16:10)
+      const card1 = document.getElementById("card-press-front");
+      card1.setConfig({
+        type: "custom:geely-starray-card",
+        name: "Geely Starray EM-i",
+        image_preset: "press_front",
+        aspect_ratio: "16 / 10",
+        entities: baseEntities
+      });
+      card1.hass = mockHass;
 
-    // 2. Press Rear (16:10)
-    const card2 = document.getElementById("card-press-rear");
-    card2.setConfig({
-      type: "custom:geely-starray-card",
-      name: "Geely Starray EM-i",
-      image_preset: "press_rear",
-      aspect_ratio: "16 / 10",
-      entities: baseEntities
-    });
-    card2.hass = mockHass;
+      // 2. Press Rear (16:10)
+      const card2 = document.getElementById("card-press-rear");
+      card2.setConfig({
+        type: "custom:geely-starray-card",
+        name: "Geely Starray EM-i",
+        image_preset: "press_rear",
+        aspect_ratio: "16 / 10",
+        entities: baseEntities
+      });
+      card2.hass = mockHass;
 
-    // 3. Warsaw Plaza (16:10)
-    const card3 = document.getElementById("card-plaza");
-    card3.setConfig({
-      type: "custom:geely-starray-card",
-      name: "Geely Starray EM-i",
-      image_preset: "plaza",
-      aspect_ratio: "16 / 10",
-      entities: baseEntities
-    });
-    card3.hass = mockHass;
+      // 3. Warsaw Plaza (16:10)
+      const card3 = document.getElementById("card-plaza");
+      card3.setConfig({
+        type: "custom:geely-starray-card",
+        name: "Geely Starray EM-i",
+        image_preset: "plaza",
+        aspect_ratio: "16 / 10",
+        entities: baseEntities
+      });
+      card3.hass = mockHass;
 
-    // 4. Studio Dark (1:1)
-    const card4 = document.getElementById("card-parked-dark");
-    card4.setConfig({
-      type: "custom:geely-starray-card",
-      name: "Geely Starray EM-i",
-      image_preset: "studio_dark",
-      aspect_ratio: "1 / 1",
-      entities: baseEntities
-    });
-    card4.hass = mockHass;
+      // 4. Studio Dark (1:1)
+      const card4 = document.getElementById("card-parked-dark");
+      card4.setConfig({
+        type: "custom:geely-starray-card",
+        name: "Geely Starray EM-i",
+        image_preset: "studio_dark",
+        aspect_ratio: "1 / 1",
+        entities: baseEntities
+      });
+      card4.hass = mockHass;
 
-    // 5. Charging Dark (1:1)
-    const card5 = document.getElementById("card-charging-dark");
-    card5.setConfig({
-      type: "custom:geely-starray-card",
-      name: "Geely Starray EM-i",
-      image_preset: "studio_dark",
-      aspect_ratio: "1 / 1",
-      entities: baseEntities
-    });
-    card5.hass = mockHassCharging;
+      // 5. Charging Dark (1:1)
+      const card5 = document.getElementById("card-charging-dark");
+      card5.setConfig({
+        type: "custom:geely-starray-card",
+        name: "Geely Starray EM-i",
+        image_preset: "studio_dark",
+        aspect_ratio: "1 / 1",
+        entities: baseEntities
+      });
+      card5.hass = mockHassCharging;
 
-    // 6. Cockpit (16:10)
-    const card6 = document.getElementById("card-cockpit");
-    card6.setConfig({
-      type: "custom:geely-starray-card",
-      name: "Geely Starray EM-i",
-      image_preset: "cockpit",
-      aspect_ratio: "16 / 10",
-      entities: baseEntities
-    });
-    card6.hass = mockHass;
+      // 6. Cockpit (16:10)
+      const card6 = document.getElementById("card-cockpit");
+      card6.setConfig({
+        type: "custom:geely-starray-card",
+        name: "Geely Starray EM-i",
+        image_preset: "cockpit",
+        aspect_ratio: "16 / 10",
+        entities: baseEntities
+      });
+      card6.hass = mockHass;
 
-    // 7. Editor Demo
-    const editor = document.getElementById("card-editor-demo");
-    editor.setConfig({
-      type: "custom:geely-starray-card",
-      name: "Geely Starray EM-i",
-      image_preset: "press_front",
-      aspect_ratio: "16 / 10",
-      entities: baseEntities
+      // 7. Editor Demo
+      const editor = document.getElementById("card-editor-demo");
+      editor.setConfig({
+        type: "custom:geely-starray-card",
+        name: "Geely Starray EM-i",
+        image_preset: "press_front",
+        aspect_ratio: "16 / 10",
+        entities: baseEntities
+      });
+      editor.hass = mockHass;
     });
-    editor.hass = mockHass;
   </script>
 </body>
 </html>

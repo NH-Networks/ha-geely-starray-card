@@ -32,5 +32,9 @@ const pt={attribute:!0,type:String,converter:q,reflect:!1,hasChanged:y},dt=(t=pt
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */function ut(t){return(e,i)=>"object"==typeof i?dt(t,e,i):((t,e,i)=>{const s=e.hasOwnProperty(i);return e.constructor.createProperty(i,t),s?Object.getOwnPropertyDescriptor(e,i):void 0})(t,e,i)}
-/**
+function ft(t){return ut(Object.assign({},t,{state:!0,attribute:!1}))}
+const css = (strings, ...values) => {
+  const cssText = typeof strings === "string" ? strings : strings.reduce((acc, str, i) => acc + str + (values[i] !== undefined ? values[i] : ""), "");
+  return a(cssText);
+};
 

@@ -126,6 +126,32 @@ entities:
   ...
 ```
 
+### 4. Shelly Wall Display (X2i) & Compacte Dashboards
+
+Voor muurschermen met beperkte hoogte (zoals het **Shelly Wall Display X2i** met een effectieve Lovelace viewport van ~415 px) is er een speciale compact-modus die perfect schaalt zonder verticale scrollbars:
+
+```yaml
+type: custom:geely-starray-card # of custom:geely-car-card
+name: Geely Starray EM-i
+compact: true # Activeert compacte typografie en badges
+aspect_ratio: 16/10 # Slanke breedbeeldverhouding (past perfect onder je klimaat- of laadcockpit)
+image_preset: press_front # Europese persfoto met origineel STARRAY EM-i kenteken
+entities:
+  battery: sensor.geely_starray_battery_percentage
+  electric_range: sensor.geely_starray_electric_range
+  fuel_range: sensor.geely_starray_fuel_range
+  fuel_level: sensor.geely_starray_fuel_level
+  charging_connection_status: binary_sensor.geely_starray_charger_plug
+  charging_status: sensor.geely_starray_charging_status
+  charging_time_left: sensor.geely_starray_time_to_full_charge
+  lock: lock.geely_starray_doors
+  location: device_tracker.geely_starray_location
+  climate: switch.geely_starray_ac
+  defrost: switch.geely_starray_defrost
+  unlock_trunk: button.geely_starray_unlock_trunk
+  find_car: button.geely_starray_find_car
+```
+
 ---
 
 ## Entiteiten Referentie (`geely-connect` & `geely-global-ha`)
